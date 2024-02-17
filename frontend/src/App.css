@@ -1,13 +1,25 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+}
+
 body {
 	font-family: "Montserrat", sans-serif;
-	margin: 20px;
 	background-color: lightgray;
+}
+
+header h1 {
+	padding: 10px 20px;
+	margin-bottom: 20px;
+	opacity: 0.8;
 }
 
 .app-container {
 	grid-template-columns: 1fr;
+	padding: 20px;
 }
 
 @media (min-width: 600px) {
@@ -75,15 +87,16 @@ input {
 
 .note-form button {
 	border-radius: 5px;
-	background-color: rgb(64, 154, 184);
+	background-color: rgb(0, 0, 255);
 	border: none;
 	padding: 10px;
 	font-size: 16px;
 	color: white;
+	transition: 0.8s;
 }
 
 .note-form button:hover {
-	background-color: rgb(106, 175, 198);
+	background-color: rgb(9, 9, 236);
 	cursor: pointer;
 }
 
@@ -98,16 +111,24 @@ input {
 }
 
 .edit-buttons button:last-of-type {
-	background-color: rgb(220, 89, 89);
+	background-color: rgb(255, 0, 0);
 	color: white;
 }
 
 .delete {
-	color: rgb(220, 89, 89);
+	color: rgb(255, 0, 0);
 }
 
 .note-title {
 	margin-top: 0;
 	margin-bottom: 0;
 	font-weight: 500;
+}
+
+.note-date {
+	margin-top: 0;
+	margin-bottom: 15px;
+	font-size: 10px;
+	font-weight: medium;
+	opacity: 0.5;
 }

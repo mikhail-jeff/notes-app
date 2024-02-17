@@ -2,10 +2,15 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import { MdDeleteForever } from "react-icons/md";
 
+import { formatDistanceToNow } from "date-fns";
+import { toast, Slide } from "react-toastify";
+
 type Note = {
 	id: number;
 	title: string;
 	content: string;
+	createdAt: Date;
+	updatedAt: Date;
 };
 
 function App() {
@@ -62,6 +67,18 @@ function App() {
 			setNotes([newNote, ...notes]);
 			setTitle("");
 			setContent("");
+
+			toast.success("Note added succesfuly", {
+				position: "top-right",
+				autoClose: 2000,
+				hideProgressBar: false,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+				progress: undefined,
+				theme: "dark",
+				transition: Slide,
+			});
 		} catch (error) {
 			console.log(error);
 		}
@@ -92,6 +109,18 @@ function App() {
 			setTitle("");
 			setContent("");
 			setSelectedNote(null);
+
+			toast.success("Note updated succesfuly", {
+				position: "top-right",
+				autoClose: 2000,
+				hideProgressBar: false,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+				progress: undefined,
+				theme: "dark",
+				transition: Slide,
+			});
 		} catch (error) {
 			console.log(error);
 		}
@@ -116,57 +145,75 @@ function App() {
 			const updatedNotes = notes.filter((note) => note.id !== id);
 
 			setNotes(updatedNotes);
+
+			toast.success("Note deleted succesfuly", {
+				position: "top-right",
+				autoClose: 2000,
+				hideProgressBar: false,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+				progress: undefined,
+				theme: "dark",
+				transition: Slide,
+			});
 		} catch (error) {
 			console.log(error);
 		}
 	};
 
 	return (
-		<div className="app-container">
-			<form
-				className="note-form"
-				onSubmit={(e) => (selectedNote ? handleUpdateNote(e) : handleAddNote(e))}>
-				<input
-					type="text"
-					placeholder="Title"
-					required
-					value={title}
-					onChange={(e) => setTitle(e.target.value)}
-				/>
-				<textarea
-					rows={10}
-					placeholder="Content"
-					required
-					value={content}
-					onChange={(e) => setContent(e.target.value)}></textarea>
+		<div>
+			<header>
+				<h1>NOTES</h1>
+			</header>
+			<div className="app-container">
+				<form
+					className="note-form"
+					onSubmit={(e) => (selectedNote ? handleUpdateNote(e) : handleAddNote(e))}>
+					<input
+						type="text"
+						placeholder="Title"
+						required
+						value={title}
+						onChange={(e) => setTitle(e.target.value)}
+					/>
+					<textarea
+						rows={10}
+						placeholder="Content"
+						required
+						value={content}
+						onChange={(e) => setContent(e.target.value)}></textarea>
 
-				{selectedNote ? (
-					<div className="edit-buttons">
-						<button type="submit">Save</button>
-						<button onClick={handleCancel}>Cancel</button>
-					</div>
-				) : (
-					<button type="submit">Add Note</button>
-				)}
-			</form>
-
-			<div className="notes-grid">
-				{notes.map((note) => (
-					<div
-						onClick={() => handleNoteClick(note)}
-						className="notes-item"
-						key={note.id}>
-						<div className="notes-header">
-							<button
-								className="delete"
-								onClick={(e) => handleDeleteNote(e, note.id)}>
-								<MdDeleteForever />
-							</button>
+					{selectedNote ? (
+						<div className="edit-buttons">
+							<button type="submit">Save</button>
+							<button onClick={handleCancel}>Cancel</button>
 						</div>
-						<h2 className="note-title">{note.title}</h2>
-						<p>{note.content}</p>
-					</div>
-				))}
+					) : (
+						<button type="submit">Add Note</button>
+					)}
+				</form>
+
+				<div className="notes-grid">
+					{notes.map((note) => (
+						<div
+							onClick={() => handleNoteClick(note)}
+							className="notes-item"
+							key={note.id}>
+							<div className="notes-header">
+								<button
+									className="delete"
+									onClick={(e) => handleDeleteNote(e, note.id)}>
+									<MdDeleteForever />
+								</button>
+							</div>
+							<h2 className="note-title">{note.title}</h2>
+							<p className="note-date">posted {formatDistanceToNow(new Date(note.createdAt))}</p>
+							<p>{note.content}</p>
+						</div>
+					))}
+				</div>
 			</div>
 		</div>
 	);
