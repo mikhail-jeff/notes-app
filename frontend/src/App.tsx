@@ -23,6 +23,8 @@ function App() {
 
 	const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
+	const [loading, setLoading] = useState(true);
+
 	useEffect(() => {
 		const fetchNotes = async () => {
 			try {
@@ -34,6 +36,8 @@ function App() {
 
 				const notes: Note[] = await response.json();
 				setNotes(notes);
+
+				setLoading(false);
 			} catch (error) {
 				console.log(error);
 			}
@@ -76,7 +80,6 @@ function App() {
 				pauseOnHover: true,
 				draggable: true,
 				progress: undefined,
-				theme: "dark",
 				transition: Slide,
 			});
 		} catch (error) {
@@ -118,7 +121,6 @@ function App() {
 				pauseOnHover: true,
 				draggable: true,
 				progress: undefined,
-				theme: "dark",
 				transition: Slide,
 			});
 		} catch (error) {
@@ -154,7 +156,6 @@ function App() {
 				pauseOnHover: true,
 				draggable: true,
 				progress: undefined,
-				theme: "dark",
 				transition: Slide,
 			});
 		} catch (error) {
@@ -195,25 +196,33 @@ function App() {
 					)}
 				</form>
 
-				<div className="notes-grid">
-					{notes.map((note) => (
-						<div
-							onClick={() => handleNoteClick(note)}
-							className="notes-item"
-							key={note.id}>
-							<div className="notes-header">
-								<button
-									className="delete"
-									onClick={(e) => handleDeleteNote(e, note.id)}>
-									<MdDeleteForever />
-								</button>
-							</div>
-							<h2 className="note-title">{note.title}</h2>
-							<p className="note-date">posted {formatDistanceToNow(new Date(note.createdAt))}</p>
-							<p>{note.content}</p>
+				{!loading ? (
+					notes.length > 0 ? (
+						<div className="notes-grid">
+							{notes.map((note) => (
+								<div
+									onClick={() => handleNoteClick(note)}
+									className="notes-item"
+									key={note.id}>
+									<div className="notes-header">
+										<button
+											className="delete"
+											onClick={(e) => handleDeleteNote(e, note.id)}>
+											<MdDeleteForever />
+										</button>
+									</div>
+									<h2 className="note-title">{note.title}</h2>
+									<p className="note-date">posted {formatDistanceToNow(new Date(note.createdAt))}</p>
+									<p>{note.content}</p>
+								</div>
+							))}
 						</div>
-					))}
-				</div>
+					) : (
+						<p className="no-notes">No notes available.</p>
+					)
+				) : (
+					<div className="spinner"></div>
+				)}
 			</div>
 		</div>
 	);
