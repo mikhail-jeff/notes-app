@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import { MdDeleteForever } from "react-icons/md";
 
@@ -9,12 +9,33 @@ type Note = {
 };
 
 function App() {
+	const baseUrl = "http://localhost:5000/api/notes";
+
 	const [notes, setNotes] = useState<Note[]>([]);
 
 	const [title, setTitle] = useState("");
 	const [content, setContent] = useState("");
 
 	const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+
+	useEffect(() => {
+		const fetchNotes = async () => {
+			try {
+				const response = await fetch(baseUrl);
+
+				if (!response.ok) {
+					throw new Error("Failed to fetch notes");
+				}
+
+				const notes: Note[] = await response.json();
+				setNotes(notes);
+			} catch (error) {
+				console.log(error);
+			}
+		};
+
+		fetchNotes();
+	}, []);
 
 	// *** HANDLE NOTE CLICK
 	const handleNoteClick = (note: Note) => {
@@ -24,42 +45,56 @@ function App() {
 	};
 
 	// *** ADD NOTE
-	const handleAddNote = (e: React.FormEvent) => {
+	const handleAddNote = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		const newNote: Note = {
-			id: notes.length + 1,
-			title: title,
-			content: content,
-		};
+		try {
+			const response = await fetch(baseUrl, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ title, content }),
+			});
 
-		console.log(newNote);
+			const newNote = await response.json();
 
-		setNotes([newNote, ...notes]);
-		setTitle("");
-		setContent("");
+			setNotes([newNote, ...notes]);
+			setTitle("");
+			setContent("");
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	// *** UPDATE NOTE
-	const handleUpdateNote = (e: React.FormEvent) => {
+	const handleUpdateNote = async (e: React.FormEvent) => {
 		e.preventDefault();
 
 		if (!selectedNote) {
 			return;
 		}
 
-		const updatedNote: Note = {
-			id: selectedNote.id,
-			title: title,
-			content: content,
-		};
+		try {
+			const response = await fetch(`${baseUrl}/${selectedNote.id}`, {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ title, content }),
+			});
 
-		const updatedNotesList = notes.map((note) => (note.id === selectedNote.id ? updatedNote : note));
+			const updatedNote = await response.json();
 
-		setNotes(updatedNotesList);
-		setTitle("");
-		setContent("");
-		setSelectedNote(null);
+			const updatedNotesList = notes.map((note) => (note.id === selectedNote.id ? updatedNote : note));
+
+			setNotes(updatedNotesList);
+			setTitle("");
+			setContent("");
+			setSelectedNote(null);
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	// *** CANCEL EDIT
@@ -70,12 +105,20 @@ function App() {
 	};
 
 	// *** DELETE NOTE
-	const handleDeleteNote = (e: React.FormEvent, noteId: number) => {
+	const handleDeleteNote = async (e: React.FormEvent, id: number) => {
 		e.stopPropagation();
 
-		const updatedNotes = notes.filter((note) => note.id !== noteId);
+		try {
+			await fetch(`${baseUrl}/${id}`, {
+				method: "DELETE",
+			});
 
-		setNotes(updatedNotes);
+			const updatedNotes = notes.filter((note) => note.id !== id);
+
+			setNotes(updatedNotes);
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	return (
